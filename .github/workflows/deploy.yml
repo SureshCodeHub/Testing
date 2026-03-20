@@ -57,7 +57,7 @@ jobs:
     - name: Deploy to Azure Container App
       run: |
         az containerapp update \
-          --name rag-app \
-          --resource-group rag-rg \
+          --name ragcicd \
+          --resource-group credit-risk-rg \
           --image ${{ secrets.ACR_LOGIN }}/rag-app:latest \
           --set-env-vars OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
