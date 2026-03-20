@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-# ✅ ADD HERE (global level)
+
+# ✅ Force Node 24 (removes warning)
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -13,6 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
     # =========================
     # 🔷 CI (Continuous Integration)
     # =========================
@@ -20,17 +22,21 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v4
 
+    - name: Setup Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
     - name: Install Dependencies
       run: pip install -r requirements.txt
 
-    # ✅ THIS IS YOUR STEP (correct placement)
     - name: Run Tests
       run: pytest
       env:
         PYTHONPATH: .
 
     # =========================
-    # 🔷 ADD AZURE LOGIN HERE ✅
+    # 🔷 Azure Login
     # =========================
 
     - name: Azure Login
@@ -54,13 +60,21 @@ jobs:
     - name: Push Image
       run: docker push ${{ secrets.ACR_LOGIN }}/rag-app:latest
 
+    # ✅ Configure ACR access (required once, safe to run always)
+    - name: Configure Container App Registry
+      run: |
+        az containerapp registry set \
+          --name ragcicd \
+          --resource-group credit-risk-rg \
+          --server ${{ secrets.ACR_LOGIN }} \
+          --username ${{ secrets.ACR_USERNAME }} \
+          --password ${{ secrets.ACR_PASSWORD }}
+
+    # ✅ Deploy updated image
     - name: Deploy to Azure Container App
       run: |
         az containerapp update \
           --name ragcicd \
           --resource-group credit-risk-rg \
-          --image ragregistry123.azurecr.io/rag-app:latest \
-          --registry-server ragregistry123.azurecr.io \
-          --registry-username ragregistry123 \
-          --registry-password 3I1EsWLDGNGqhqLokwgZW2P5fyiDfxotdbf2zF7D29DUJCG2fb9MJQQJ99CCACYeBjFEqg7NAAACAZCRKRIt \
+          --image ${{ secrets.ACR_LOGIN }}/rag-app:latest \
           --set-env-vars OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
