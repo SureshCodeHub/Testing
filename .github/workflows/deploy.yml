@@ -59,5 +59,8 @@ jobs:
         az containerapp update \
           --name ragcicd \
           --resource-group credit-risk-rg \
-          --image ${{ secrets.ACR_LOGIN }}/rag-app:latest \
-          --set-env-vars OPENAI_API_KEY=${{ secrets.OPENAI_API_KEY }}
+          --image $ACR_LOGIN/rag-app:latest \
+          --registry-server $ACR_LOGIN \
+          --registry-username $ACR_USERNAME \
+          --registry-password $ACR_PASSWORD \
+          --set-env-vars OPENAI_API_KEY=$OPENAI_API_KEY
