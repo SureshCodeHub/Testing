@@ -23,8 +23,11 @@ jobs:
     - name: Install Dependencies
       run: pip install -r requirements.txt
 
+    # ✅ THIS IS YOUR STEP (correct placement)
     - name: Run Tests
       run: pytest
+      env:
+        PYTHONPATH: .
 
     # =========================
     # 🔷 ADD AZURE LOGIN HERE ✅
