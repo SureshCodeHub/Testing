@@ -1,9 +1,11 @@
-from openai import OpenAI
 import os
-OPENAI_API_KEY=os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
+from openai import OpenAI
+
+def get_client():
+    return OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 def get_embedding(text):
+    client = get_client()
     response = client.embeddings.create(
         model="text-embedding-3-small",
         input=text

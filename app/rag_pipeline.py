@@ -1,11 +1,12 @@
-from app.embeddings import get_embedding, OPENAI_API_KEY
+from app.embeddings import get_embedding
 from app.vector_store import search_vector_db
 from openai import OpenAI
 import os
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-client = OpenAI(api_key=OPENAI_API_KEY)
+
 
 def generate_answer(query):
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    client = OpenAI(api_key=OPENAI_API_KEY)
     query_embedding = get_embedding(query)
 
     docs = search_vector_db(query_embedding)
